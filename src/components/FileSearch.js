@@ -1,30 +1,40 @@
 import React, { useState, useEffect, useRef } from 'react'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faTimes, faSearch } from '@fortawesome/free-solid-svg-icons'
+import useKeyPress from '../hooks/useKeyPress'
+import ProTypes from 'prop-types'
 
 const FileSearch = ({ title, onFileSearch }) => {
   const [inputActivte, setInputActive] = useState(false)
   const [value, setValue] = useState('')
+  const enterPressed = useKeyPress(13)
+  const escPressed = useKeyPress(27)
   let node = useRef(null);
-  const closeSearch = (e) => {
-    e.preventDefault();
+  const closeSearch = () => {
     setInputActive(false);
     setValue('')
   }
 
   useEffect(() => {
-    const handleInputEvent = (event) => {
-      const { keyCode } = event;
-      if (keyCode === 13 && inputActivte) {
-        onFileSearch(value)
-      } else if (keyCode === 27 && inputActivte) {
-        closeSearch(event)
-      }
+    if (enterPressed && inputActivte) {
+      onFileSearch(value)
     }
-    document.addEventListener('keyup', handleInputEvent)
-    return () => {
-      document.removeEventListener('keyup', handleInputEvent)
+    if (escPressed && inputActivte) {
+      closeSearch()
     }
+    // const handleInputEvent = (event) => {
+    //   console.log(event,123)
+    //   const { keyCode } = event;
+    //   if (keyCode === 13 && inputActivte) {
+    //     onFileSearch(value)
+    //   } else if (keyCode === 27 && inputActivte) {
+    //     closeSearch(event)
+    //   }
+    // }
+    // document.addEventListener('keyup', handleInputEvent)
+    // return () => {
+    //   document.removeEventListener('keyup', handleInputEvent)
+    // }
   })
 
   useEffect(() => {
@@ -72,6 +82,15 @@ const FileSearch = ({ title, onFileSearch }) => {
       }
     </div>
   )
+}
+
+FileSearch.propTypes = {
+  title: ProTypes.string,
+  onFileSearch: ProTypes.func.isRequired
+}
+
+FileSearch.defaultProps = {
+  title: '我的云文档'
 }
 
 export default FileSearch
